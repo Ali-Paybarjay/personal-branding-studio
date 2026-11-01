@@ -3,11 +3,12 @@
 set -e
 cd "$(dirname "$0")"
 for b in /opt/homebrew/bin/brew /usr/local/bin/brew; do [ -x "$b" ] && eval "$("$b" shellenv)"; done
+export HOMEBREW_NO_INSTALL_UPGRADE=1 HOMEBREW_NO_ENV_HINTS=1   # ابزاری که از قبل هست ارتقا داده نشود
 say() { printf "\n\033[1;36m▸ %s\033[0m\n" "$1"; }
 
 if [ ! -d "/Applications/Google Chrome.app" ]; then
   say "نصب Google Chrome (برای ساختن زیرنویس، گرافیک و کاور)"
-  brew install --cask google-chrome
+  brew install --cask google-chrome </dev/null
 fi
 command -v node >/dev/null 2>&1 || brew install node
 command -v ffmpeg >/dev/null 2>&1 || brew install ffmpeg
