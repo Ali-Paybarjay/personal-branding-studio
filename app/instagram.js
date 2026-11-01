@@ -99,6 +99,7 @@ async function viewInsta() {
       <button class="btn primary" id="igSync">همگام‌سازی</button>
       <span class="ig-dim" id="igSyncedAt"></span>
       <span class="grow"></span>
+      <button class="btn" id="igReplace" title="مثلاً وقتی توکن منقضی شده">تعویض توکن</button>
       <button class="btn" id="igDisconnect" title="توکن از این کامپیوتر پاک می‌شود؛ داده‌های ذخیره‌شده می‌مانند">قطع اتصال</button>
     </div>
     <div id="igJob" class="build-status" hidden></div>
@@ -106,6 +107,7 @@ async function viewInsta() {
     <div id="igView" style="padding-top:20px"></div>`;
   wireTabs('igTabs', k => { IGS.igTab = k; renderInstaTab(); });
   $('#igSync').onclick = startSync;
+  $('#igReplace').onclick = () => igConnectView({ replace: true });
   $('#igDisconnect').onclick = async () => {
     if (!confirm('اتصال اینستاگرام قطع شود؟ آمارهای ذخیره‌شده پاک نمی‌شوند.')) return;
     await igPost('/api/insta/disconnect'); viewInsta();
@@ -118,34 +120,156 @@ async function viewInsta() {
   renderInstaTab();
 }
 
-/* اتصال: کاربر یک توکن بلندمدت از داشبورد Meta می‌سازد و اینجا می‌گذارد. راهنمای قدم‌به‌قدم در docs/instagram-connect.md */
-function igConnectView() {
+/* اتصال: کاربر یک توکن بلندمدت از داشبورد Meta می‌سازد و اینجا می‌گذارد. همین راهنما در docs/instagram-connect.md هم هست؛
+   هر تغییری این‌جا، آن‌جا هم. هر قدم یک کارت با تیک «انجام دادم» است (localStorage)؛ قدم انجام‌شده جمع می‌شود. */
+const IGC_KEY = 'ig-connect-done';
+const igcDone = () => { try { return new Set(JSON.parse(localStorage.getItem(IGC_KEY) || '[]')); } catch { return new Set(); } };
+const igUi = s => `<span class="ui" dir="ltr">${s}</span>`;
+const igPath = (...xs) => xs.map(igUi).join('<span class="ui-sep">←</span>');
+const igExt = (href, label) => `<a class="ext" dir="ltr" href="${href}" target="_blank" rel="noopener">${label}</a>`;
+const IGC_STEPS = [
+  ['dev', 'ساختن حساب توسعه‌دهنده‌ی Meta', `
+    <p>به ${igExt('https://developers.facebook.com/', 'developers.facebook.com')} برو و بالای صفحه ${igUi('Log in')} را بزن و با اکانت فیسبوکت وارد شو.</p>
+    <p>اگر بار اول است، ${igUi('Get Started')} را بزن و ثبت‌نام را تا آخر برو: شرایط را قبول کن، شماره‌ی تلفن و ایمیلت را تأیید کن، و اگر نقشت را پرسید، ${igUi('Developer')} را انتخاب کن.</p>
+    <p class="igc-note">اگر قبلاً حساب توسعه‌دهنده ساخته‌ای، این قدم را رد کن.</p>`],
+  ['app', 'ساختن اپ', `
+    <p>به ${igExt('https://developers.facebook.com/apps/creation/', 'developers.facebook.com/apps/creation')} برو. چند صفحه پشت سر هم باز می‌شود؛ بعد از هر صفحه ${igUi('Next')} را بزن:</p>
+    <ol class="igc-sub">
+      <li>${igUi('App details')}: یک اسم برای اپ بنویس، مثلاً «Maryam Studio»، و ایمیلت را وارد کن. کلمه‌های Instagram، IG، Facebook و Meta نباید در اسم باشند، وگرنه Meta قبولش نمی‌کند. این اسم را کسی جز خودت نمی‌بیند.</li>
+      <li>${igUi('Use cases')}: گزینه‌ی ${igUi('Manage messaging &amp; content on Instagram')} را انتخاب کن. اگر در فهرست ندیدی، صفحه را پایین بکش.</li>
+      <li>${igUi('Business')}: اگر business portfolio داری، انتخابش کن. اگر نداری، همین‌جا یکی با اسم خودت یا برندت بساز. لازم نیست تأیید شده باشد.</li>
+      <li>در صفحه‌های ${igUi('Requirements')} و ${igUi('Overview')} هم جلو برو و آخر ${igUi('Go to dashboard')} را بزن.</li>
+    </ol>
+    <p class="igc-note">ممکن است Meta وسط کار دوباره رمز فیسبوکت را بخواهد؛ عادی است.</p>`],
+  ['setup', 'باز کردن تنظیمات اینستاگرامِ اپ', `
+    <p>در داشبورد اپ این مسیر را برو:</p>
+    <p>${igPath('Use cases', 'Customize')} (دکمه‌ی کنار ${igUi('Manage messaging &amp; content on Instagram')})${'<span class="ui-sep">←</span>'}${igUi('API setup with Instagram login')}</p>
+    <p class="igc-note">قدم‌های ۴ تا ۷ همه در همین صفحه‌اند. این تب مرورگر را باز نگه دار.</p>`],
+  ['perms', 'اضافه کردن دسترسی‌ها', `
+    <p>اول ${igUi('Add all required permissions')} را بزن. بعد چک کن این دو دسترسی در فهرست باشند؛ برای استودیو همین دو تا کافی است:</p>
+    <table class="igc-perms"><tbody>
+      <tr><td><code dir="ltr">instagram_business_basic</code></td><td>اسم پیج، تعداد فالوور و فهرست پست‌ها</td></tr>
+      <tr><td><code dir="ltr">instagram_business_manage_insights</code></td><td>آمار پست‌ها، ریل‌ها، استوری‌ها و مخاطب</td></tr>
+    </tbody></table>
+    <p>اگر یکی نبود، ${igUi('Go to permissions and features')} را بزن، آن دسترسی را پیدا کن و جلویش ${igUi('Add')} را بزن.</p>
+    <p class="igc-warn"><b>این قدم را پیش از ساختن توکن تمام کن.</b> توکن فقط دسترسی‌هایی را می‌گیرد که لحظه‌ی ساختنش فعال بوده‌اند. اگر بعداً دسترسی‌ای اضافه کنی، باید توکن را دوباره بسازی.</p>
+    <p class="igc-note">اگر Meta دسترسی‌های دیگری مثل پیام و کامنت را هم خودش اضافه کرد، اشکالی ندارد؛ استودیو از آن‌ها استفاده نمی‌کند. دسترسی‌هایی که business در اسمشان نیست (مثل <code dir="ltr">instagram_basic</code>) یا با <code dir="ltr">pages_</code> و <code dir="ltr">ads_</code> شروع می‌شوند مال روش دیگری از اتصال‌اند؛ اضافه‌شان نکن.</p>`],
+  ['tester', 'اضافه کردن پیجت به‌عنوان «تستر»', `
+    <p>در همان صفحه، در بخش ${igUi('Generate access tokens')} روی ${igUi('Add account')} بزن.</p>
+    <p>Meta اول می‌خواهد پیجت «تستر» این اپ شود. در صفحه‌ای که باز می‌شود ${igUi('Instagram Tester')} را انتخاب کن، یوزرنیم اینستاگرامت را <b>بدون @</b> بنویس و ${igUi('Add')} را بزن.</p>
+    <p class="igc-note">با این کار یک دعوت برای پیجت فرستاده می‌شود. تا دعوت را قبول نکنی (قدم بعد)، نمی‌شود توکن ساخت.</p>`],
+  ['accept', 'قبول کردن دعوت در اینستاگرام', `
+    <p>در یک تب تازه‌ی مرورگر کامپیوتر ${igExt('https://www.instagram.com/accounts/manage_access/', 'instagram.com/accounts/manage_access')} را باز کن و با <b>همان پیجی</b> وارد شو که در قدم قبل نوشتی.</p>
+    <p>تب ${igUi('Tester Invites')} را باز کن و کنار اسم اپت ${igUi('Accept')} را بزن.</p>
+    <p class="igc-note">اگر دعوت هنوز نیامده، یکی دو دقیقه صبر کن و صفحه را refresh کن. این بخش در اپ گوشی معمولاً نیست؛ از مرورگر کامپیوتر برو. اگر چند پیج داری، مطمئن شو با پیج درست وارد شده‌ای.</p>`],
+  ['token', 'ساختن توکن', `
+    <p>به تب ${igUi('API setup with Instagram login')} برگرد و صفحه را refresh کن. حالا یوزرنیمت زیر ${igUi('Generate access tokens')} دیده می‌شود.</p>
+    <ol class="igc-sub">
+      <li>کنار یوزرنیمت ${igUi('Generate token')} را بزن.</li>
+      <li>پنجره‌ی ورود اینستاگرام باز می‌شود. وارد شو و دسترسی‌ها را قبول کن. اگر پنجره باز نشد، مرورگر جلوی پنجره‌ی بازشو (pop-up) را گرفته؛ برای همین سایت اجازه بده و دوباره بزن.</li>
+      <li>توکن نشان داده می‌شود: یک رشته‌ی خیلی طولانی از حرف و عدد که معمولاً با <code dir="ltr">IG</code> شروع می‌شود. اگر تیک ${igUi('I understand')} خواست، بزنش. توکن را <b>کامل</b> کپی کن.</li>
+    </ol>
+    <p class="igc-note">اگر پنجره را بستی و توکن را کپی نکرده بودی، دوباره ${igUi('Generate token')} را بزن؛ توکن تازه ساخته می‌شود.</p>`],
+  ['paste', 'وارد کردن توکن در استودیو', `
+    <p>توکن را این‌جا بچسبان و «اتصال» را بزن. اگر یوزرنیمت نشان داده شد، اتصال درست است.</p>
+    <div class="rowbar" style="margin:10px 0 0">
+      <input id="igToken" class="cap-input" dir="ltr" placeholder="IGAA…" autocomplete="off" style="flex:1">
+      <button class="btn primary" id="igConnect">اتصال</button>
+    </div>
+    <div id="igConnectMsg" class="cap-hint"></div>
+    <p class="igc-note">بعد از اتصال، اولین همگام‌سازی خودش شروع می‌شود و بسته به تعداد پست‌ها چند دقیقه طول می‌کشد. اینستاگرام در هر ساعت تعداد محدودی درخواست قبول می‌کند؛ اگر پیام «سقف درخواست» آمد، یک ساعت بعد دوباره «همگام‌سازی» بزن تا کامل شود.</p>`],
+];
+
+function igConnectView(opts = {}) {
+  const done = igcDone();
+  const n = IGC_STEPS.filter(([k]) => done.has(k)).length;
   $('#page').innerHTML = `
     <div class="page-head"><h2>تحلیل اینستاگرام</h2>
-      <p>پیج اینستاگرامت را وصل کن تا آمار پست‌ها، ریل‌ها، استوری‌ها و مخاطب‌هایت اینجا جمع شود و تحلیلگر برایت گزارش بنویسد. اتصال فقط خواندنی است: استودیو هیچ‌وقت چیزی منتشر یا پاک نمی‌کند.</p></div>
-    <div class="panel ig-connect">
-      <h3>اتصال اینستاگرام</h3>
-      <p class="cap-hint" style="margin-top:0">حدود ۲۰ دقیقه، روی کامپیوتر، رایگان. خلاصه‌ی قدم‌ها (راهنمای کامل با جزئیات و عیب‌یابی: <a href="https://github.com/siavash-smf/personal-branding-studio/blob/main/docs/instagram-connect.md" target="_blank" rel="noopener">docs/instagram-connect.md</a>):</p>
-      <ol class="ig-steps">
-        <li>پیجت باید <b>حرفه‌ای</b> باشد (Creator یا Business): Settings and activity ← Account type and tools ← Switch to professional account.</li>
-        <li>در <a href="https://developers.facebook.com/apps/creation/" target="_blank" rel="noopener">developers.facebook.com/apps/creation</a> با فیسبوکت وارد شو و یک اپ بساز؛ در Use cases گزینه‌ی <b>Manage messaging &amp; content on Instagram</b> را بزن. (کلمه‌ی Instagram یا Meta در اسم اپ نباشد.)</li>
-        <li>Use cases ← Customize ← <b>API setup with Instagram login</b>. دو دسترسی <code dir="ltr">instagram_business_basic</code> و <code dir="ltr">instagram_business_manage_insights</code> را اضافه کن.</li>
-        <li>در «Generate access tokens» روی <b>Add account</b> بزن و پیجت را به‌عنوان <b>Instagram Tester</b> اضافه کن. بعد در <a href="https://www.instagram.com/accounts/manage_access/" target="_blank" rel="noopener">instagram.com/accounts/manage_access</a> تب Tester Invites دعوت را <b>Accept</b> کن.</li>
-        <li>به همان صفحه برگرد، کنار اسم پیجت <b>Generate token</b> را بزن، توکن را کامل کپی کن و پایین بچسبان.</li>
-      </ol>
-      <p class="cap-hint">توکن مثل رمز عبور است: فقط روی همین کامپیوتر (فایل <code>.env</code>) ذخیره می‌شود و برای کسی نفرستش. استودیو هر چند روز خودش تمدیدش می‌کند.</p>
-      <div class="rowbar" style="margin-top:12px">
-        <input id="igToken" class="cap-input" dir="ltr" placeholder="IGAA…" autocomplete="off" style="flex:1">
-        <button class="btn primary" id="igConnect">اتصال</button>
+      <p>پیج اینستاگرامت را وصل کن تا آمار پست‌ها، ریل‌ها، استوری‌ها و مخاطب‌هایت این‌جا جمع شود و تحلیلگر برایت گزارش بنویسد.</p></div>
+    ${opts.replace ? '<div class="rowbar"><button class="btn" id="igBack">→ برگشت به آمار</button></div>' : ''}
+    <section class="panel igc-intro">
+      <h3>${opts.replace ? 'تعویض توکن اینستاگرام' : 'اتصال اینستاگرام: راهنمای قدم‌به‌قدم'}</h3>
+      <p>با این راهنما یک «توکن دسترسی» از Meta (شرکت مادر اینستاگرام) می‌گیری و این‌جا واردش می‌کنی. توکن کلیدی است که به استودیو اجازه می‌دهد آمار پیجت را بخواند، <b>بدون اینکه رمز اینستاگرامت را به آن بدهی</b>. این مسیر رسمی خود Meta است.</p>
+      <dl class="igc-facts">
+        <div><dt>زمان</dt><dd>حدود ۲۰ دقیقه</dd></div>
+        <div><dt>کجا</dt><dd>مرورگر کامپیوتر</dd></div>
+        <div><dt>هزینه</dt><dd>رایگان</dd></div>
+        <div><dt>دسترسی استودیو</dt><dd>فقط خواندن آمار</dd></div>
+      </dl>
+      <p class="igc-note">استودیو هیچ‌وقت چیزی منتشر یا پاک نمی‌کند و به دایرکت‌هایت دست نمی‌زند. این بخش اختیاری است؛ بقیه‌ی استودیو بدون آن هم کامل کار می‌کند.</p>
+      <div class="rowbar" style="margin:12px 0 0">
+        <span class="cap-hint" style="margin:0">${faNum(n)} از ${faNum(IGC_STEPS.length)} قدم انجام شده</span>
+        <span class="grow"></span>
+        <button class="btn" id="igcJump">توکن را از قبل دارم</button>
       </div>
-      <div id="igConnectMsg" class="cap-hint"></div>
-    </div>`;
+    </section>
+
+    <section class="panel igc-before">
+      <h3>پیش از شروع</h3>
+      <ul class="igc-check">
+        <li><b>پیجت باید «حرفه‌ای» باشد</b> (Creator یا Business؛ هر دو کار می‌کند). اگر هنوز شخصی است، در اپ اینستاگرام:<br>${igPath('Settings and activity', 'Account type and tools', 'Switch to professional account')}<br><span class="cap-hint">رایگان است و فالوورها و پست‌هایت دست نمی‌خورند.</span></li>
+        <li><b>یک اکانت فیسبوک لازم داری.</b> ورود به پنل Meta با فیسبوک است. لازم نیست پیج اینستاگرامت به فیسبوک وصل باشد.</li>
+        <li><b>کار را روی کامپیوتر انجام بده.</b> پنل Meta و صفحه‌ی قبول دعوت روی گوشی کامل کار نمی‌کنند.</li>
+      </ul>
+      <p class="igc-note">اسم دکمه‌ها همان‌طور که روی صفحه می‌بینی، انگلیسی آمده‌اند. Meta گاهی اسم یا جای دکمه‌ها را کمی عوض می‌کند؛ اگر صفحه‌ای با این راهنما فرق داشت، دنبال نزدیک‌ترین گزینه بگرد، یا از همان صفحه اسکرین‌شات بگیر و در گروه کلاس بپرس.</p>
+    </section>
+
+    <div class="start-steps igc-steps">
+      ${IGC_STEPS.map(([k, title, body], i) => `
+        <section class="start-step igc-step${done.has(k) ? ' done folded' : ''}" data-igc="${k}" id="igc-${k}">
+          <div class="start-num">${done.has(k) ? '✓' : faNum(i + 1)}</div>
+          <div class="start-main">
+            <h3>${title}</h3>
+            <div class="start-body igc-body">${body}
+              <label class="igc-tick"><input type="checkbox" data-igtick="${k}" ${done.has(k) ? 'checked' : ''}> این قدم را انجام دادم</label>
+            </div>
+          </div>
+        </section>`).join('')}
+    </div>
+
+    <section class="panel igc-safe">
+      <h3>نگه‌داری از توکن</h3>
+      <ul>
+        <li><b>توکن مثل رمز عبور است.</b> هر کس داشته باشدش می‌تواند آمار پیجت را بخواند. فقط روی همین کامپیوتر در فایل <code>.env</code> پوشه‌ی استودیو ذخیره می‌شود؛ آن را در چت، ایمیل یا اسکرین‌شات برای کسی نفرست.</li>
+        <li><b>۶۰ روز اعتبار دارد</b> و استودیو هر چند روز که باز باشد خودش تمدیدش می‌کند. اگر مدت زیادی استودیو را باز نکردی و منقضی شد، قدم ۷ را تکرار کن و با «تعویض توکن» توکن تازه را بگذار.</li>
+        <li><b>اگر فکر می‌کنی لو رفته:</b> در ${igExt('https://www.instagram.com/accounts/manage_access/', 'instagram.com/accounts/manage_access')} تب ${igUi('Active')} اپ را ${igUi('Remove')} کن تا دسترسی‌اش قطع شود، بعد توکن تازه بساز.</li>
+        <li><b>تأیید کسب‌وکار (Business Verification) لازم نیست.</b></li>
+      </ul>
+    </section>
+
+    <section class="panel igc-faq">
+      <h3>اگر جایی گیر کردی</h3>
+      ${[
+        ['Meta اسم اپ را قبول نمی‌کند.', 'کلمه‌های Instagram، IG، Facebook و Meta را از اسم بردار.'],
+        ['گزینه‌ی Manage messaging &amp; content on Instagram را پیدا نمی‌کنم.', 'فهرست Use cases را تا پایین ببین. اگر اپ را قبلاً با گزینه‌ی دیگری ساخته‌ای، یک اپ تازه بساز؛ ساختن اپ رایگان است.'],
+        ['بعد از Add account پیجم دیده نمی‌شود.', 'دعوت تستر هنوز قبول نشده. قدم ۶ را انجام بده و بعد صفحه‌ی API setup را refresh کن.'],
+        ['تب Tester Invites خالی است.', 'یوزرنیمی را که در قدم ۵ نوشتی چک کن (بدون @)، و مطمئن شو با همان پیج وارد instagram.com شده‌ای. یکی دو دقیقه صبر کن و refresh کن.'],
+        ['یکی از دسترسی‌ها در فهرست نیست.', `${igUi('Go to permissions and features')} را بزن و از آن‌جا اضافه‌اش کن.`],
+        ['استودیو می‌گوید «این شبیه توکن اینستاگرام نیست».', 'توکن ناقص کپی شده. همه‌اش را از اول تا آخر، بدون فاصله‌ی اضافه، دوباره کپی کن.'],
+        ['استودیو می‌گوید «اینستاگرام این توکن را قبول نکرد».', 'توکن منقضی شده یا بعد از ساختنش دسترسی اضافه کرده‌ای. در قدم ۷ توکن تازه بساز.'],
+        ['اینستاگرام اجازه‌ی اتصال نمی‌دهد.', 'پیج باید حرفه‌ای باشد؛ بخش «پیش از شروع» را ببین.'],
+        ['بعضی عددها در آمار خالی‌اند.', 'بعضی آمارها (مثل مخاطب) فقط برای پیج‌هایی با دست‌کم ۱۰۰ فالوور، یا برای پست‌هایی که چند روز از انتشارشان گذشته داده می‌شوند. چند روز بعد دوباره همگام‌سازی کن.'],
+      ].map(([q, a]) => `<details><summary>${q}</summary><p>${a}</p></details>`).join('')}
+    </section>`;
+
+  if (opts.replace) $('#igBack').onclick = viewInsta;
+  $('#igcJump').onclick = () => {
+    const s = $('#igc-paste'); s.classList.remove('folded');
+    s.scrollIntoView({ behavior: 'smooth', block: 'center' }); setTimeout(() => $('#igToken').focus(), 400);
+  };
+  $$('.igc-step h3').forEach(h => h.onclick = () => h.closest('.igc-step').classList.toggle('folded'));
+  $$('[data-igtick]').forEach(cb => cb.onchange = () => {
+    const d = igcDone(); cb.checked ? d.add(cb.dataset.igtick) : d.delete(cb.dataset.igtick);
+    localStorage.setItem(IGC_KEY, JSON.stringify([...d]));
+    const scroll = window.scrollY; igConnectView(opts); window.scrollTo(0, scroll);
+  });
   $('#igConnect').onclick = async () => {
     const tok = $('#igToken').value.trim(); if (!tok) return toast('توکن را بچسبان');
     $('#igConnect').disabled = true; $('#igConnectMsg').textContent = 'در حال بررسی توکن…';
     const r = await igPost('/api/insta/connect', { token: tok });
     $('#igConnect').disabled = false;
     if (!r.ok) { $('#igConnectMsg').textContent = '✕ ' + (r.data.error || 'نشد'); return; }
+    localStorage.removeItem(IGC_KEY);
     toast(`✓ وصل شد: @${r.data.username}`); viewInsta();
   };
 }

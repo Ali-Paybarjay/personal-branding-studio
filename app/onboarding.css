@@ -70,3 +70,40 @@
 /* اتصال اینستاگرام */
 .ig-connect .ig-steps{margin:0 0 8px; padding-inline-start:22px; line-height:2.1; font-size:14px}
 .ig-connect a, .guide a, .start-step a, .set-sec a{color:var(--accent2)}
+
+/* راهنمای اتصال اینستاگرام (instagram.js، igConnectView) */
+.igc-intro, .igc-before, .igc-safe, .igc-faq{margin-bottom:16px; font-size:14.5px; line-height:2.1}
+.igc-intro p, .igc-before p, .igc-safe p{margin:0 0 8px}
+.igc-facts{display:grid; grid-template-columns:repeat(auto-fit, minmax(140px, 1fr)); gap:8px 20px;
+  margin:12px 0; padding:12px 0 0; border-top:1px solid var(--line)}
+.igc-facts div{display:grid; gap:0}
+.igc-facts dt{color:var(--dim2); font-size:12.5px}
+.igc-facts dd{margin:0; font-weight:700}
+.igc-check{margin:0 0 10px; padding-inline-start:20px}
+.igc-check li{margin-bottom:10px}
+.igc-steps{margin-bottom:16px}
+.igc-step h3{cursor:pointer}
+.igc-body{font-size:14.5px; line-height:2.1}
+.igc-body p{margin:0 0 8px}
+.igc-sub{margin:4px 0 10px; padding-inline-start:22px}
+.igc-sub li{margin-bottom:6px}
+.ui{display:inline-block; direction:ltr; unicode-bidi:isolate; font-size:.88em; font-weight:600; line-height:1.6;
+  padding:0 .5em; border:1px solid var(--line); border-radius:7px; background:var(--panel2); color:var(--fg); white-space:nowrap}
+.ui-sep{color:var(--dim2); padding:0 .3em}
+a.ext{color:var(--accent2); font-size:.92em; unicode-bidi:isolate; overflow-wrap:anywhere}
+.igc-body code, .igc-safe code, .igc-faq code{background:var(--panel2); padding:1px 7px; border-radius:6px; color:var(--accent2); font-size:.9em}
+.igc-note{color:var(--dim); font-size:13.5px; background:var(--accent-soft); border-radius:10px; padding:8px 12px}
+.igc-warn{font-size:13.5px; background:rgba(255,219,88,.1); border:1px solid rgba(255,219,88,.35); border-radius:10px; padding:8px 12px}
+.igc-warn b{color:var(--warn)}
+.igc-perms{border-collapse:collapse; width:100%; margin:4px 0 10px; font-size:13.5px}
+.igc-perms td{padding:7px 10px; border:1px solid var(--line); vertical-align:top}
+.igc-perms td:first-child{width:1%; white-space:nowrap}
+.igc-tick{display:flex; align-items:center; gap:8px; margin-top:12px; padding-top:10px; border-top:1px dashed var(--line);
+  color:var(--dim); font-size:13.5px; cursor:pointer; width:fit-content}
+.igc-step.done .igc-tick{color:var(--fg)}
+.igc-safe ul{margin:0; padding-inline-start:20px}
+.igc-safe li{margin-bottom:8px}
+.igc-faq details{border-top:1px solid var(--line); padding:8px 0}
+.igc-faq details:last-child{border-bottom:1px solid var(--line)}
+.igc-faq summary{cursor:pointer; font-weight:700}
+.igc-faq details p{margin:6px 0 0; color:var(--dim)}
