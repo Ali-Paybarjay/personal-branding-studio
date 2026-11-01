@@ -1,0 +1,143 @@
+/* ---------- کاروسل و پست (app/carousel.js) — فقط توکن‌های style.css؛ کلاس‌های st-* از story.css ---------- */
+.cr-wrap{display:flex; flex-direction:column; gap:22px}
+.cr-dim{font-size:13px; color:var(--dim)}
+.cr-dim.bad,.cr-saved.bad{color:var(--danger-text)}
+
+/* صفحه‌ی اصلی */
+.cr-ai{display:flex; flex-direction:column; gap:12px}
+.cr-ai h3{margin:0}
+.cr-src{display:flex; gap:8px; flex-wrap:wrap}
+.cr-ai .cap-text{min-height:150px}
+.cr-ai .cr-notes{min-height:70px}
+.cr-select{background:var(--bg); color:var(--fg); border:1px solid var(--line); border-radius:11px; padding:11px 14px;
+  font-size:14.5px; font-family:var(--font); outline:none; cursor:pointer; max-width:100%}
+.cr-select:focus{border-color:var(--accent)}
+.cr-select.sm{padding:6px 10px; font-size:13.5px; border-radius:9px}
+.cr-opts{display:flex; align-items:center; gap:10px 22px; flex-wrap:wrap}
+.cr-opt{display:flex; align-items:center; gap:8px; font-size:13.5px; color:var(--dim)}
+.cr-gorow{margin:0}
+.cr-ai .cap-hint{margin:0; line-height:1.9}
+.cr-listwrap h3{margin:0 0 12px; font-size:17px}
+.cr-decks{display:grid; grid-template-columns:repeat(auto-fill,minmax(190px,1fr)); gap:14px}
+.cr-deck{background:var(--panel); border:1px solid var(--line); border-radius:14px; padding:9px; cursor:pointer;
+  display:flex; flex-direction:column; gap:8px; min-width:0}
+.cr-deck:hover{border-color:var(--accent)}
+.cr-deck canvas{width:100%; height:auto; aspect-ratio:4/5; border-radius:9px; display:block}
+.cr-dmeta{display:flex; flex-direction:column; gap:3px; padding:0 3px; min-width:0}
+.cr-dmeta b{font-size:14px; line-height:1.7; overflow:hidden; text-overflow:ellipsis; display:-webkit-box;
+  -webkit-line-clamp:2; -webkit-box-orient:vertical}
+.cr-dmeta span{font-size:12px; color:var(--dim)}
+.cr-tag{align-self:flex-start; font-size:11.5px; padding:0 9px; border-radius:20px; border:1px solid var(--line)}
+.cr-tag.run{color:var(--accent2); border-color:var(--accent)}
+.cr-tag.err{color:var(--danger-text); border-color:var(--danger)}
+.cr-tag.ok{color:var(--up, #4fd1c5); border-color:currentColor; text-decoration:none}
+.cr-dact{display:flex; gap:6px; justify-content:flex-end}
+
+/* ویرایشگر */
+.cr-top{display:flex; align-items:center; gap:10px; flex-wrap:wrap}
+.cr-top .grow{flex:1}
+.cr-title{flex:1 1 260px; min-width:0; background:var(--panel); color:var(--fg); border:1px solid var(--line);
+  border-radius:10px; padding:10px 14px; font-size:15px; font-family:var(--font); font-weight:700; outline:none}
+.cr-title:focus{border-color:var(--accent)}
+.cr-saved{font-size:12.5px; color:var(--dim2); min-width:70px}
+.cr-layout{display:grid; grid-template-columns:minmax(0,1fr) 440px; gap:24px; align-items:start}
+.cr-main{display:flex; flex-direction:column; gap:14px; min-width:0}
+.cr-slides{display:flex; flex-direction:column; gap:16px}
+.cr-slide{display:flex; gap:18px; align-items:stretch; background:var(--panel); border:1px solid var(--line);
+  border-radius:var(--radius); padding:14px 16px}
+.cr-sedit{flex:1; min-width:0; display:flex; flex-direction:column; gap:8px}
+.cr-shead{display:flex; align-items:center; gap:6px; flex-wrap:wrap}
+.cr-snum{font-size:14.5px}
+.cr-role{font-size:11.5px; color:var(--accent2); border:1px solid var(--accent); border-radius:20px; padding:0 9px}
+.cr-tsep{width:1px; height:18px; background:var(--line); margin:0 2px}
+.cr-shead .st-tool:disabled{opacity:.35; cursor:default}
+.cr-lab{font-size:12px; color:var(--dim2); margin-bottom:-4px}
+.cr-slide .st-ed{flex:none}
+.cr-slide .cr-t{min-height:64px; font-weight:700}
+.cr-slide .cr-b{min-height:110px}
+.cr-slide .st-ed[contenteditable="false"]{opacity:.55}
+.cr-imgrow{display:flex; align-items:flex-start; gap:12px; flex-wrap:wrap}
+.cr-thumb{width:72px; height:72px; object-fit:cover; border-radius:10px; border:1px solid var(--line); flex:none}
+.cr-imgctl{flex:1; min-width:0; display:flex; flex-direction:column; gap:7px}
+.cr-imgctl .st-in{gap:5px}
+.cr-imgctl .st-chip{padding:3px 10px; font-size:12px}
+.cr-imgctl input[type=range]{width:130px; accent-color:var(--accent)}
+.cr-sugg{flex:1 1 100%; display:flex; flex-direction:column; gap:6px; background:var(--panel2); border:1px dashed var(--line);
+  border-radius:10px; padding:9px 12px; font-size:12.5px; color:var(--dim)}
+.cr-iprompt{width:100%; background:var(--bg); color:var(--fg); border:1px solid var(--line); border-radius:8px; padding:7px 10px;
+  font-family:var(--font); font-size:13px; line-height:1.7; resize:vertical; outline:none; text-align:left}
+.cr-iprompt:focus{border-color:var(--accent)}
+.cr-sugg .st-tool{align-self:flex-start}
+.cr-regen{display:flex; gap:8px; align-items:center; flex-wrap:wrap}
+.cr-regen .cap-input{flex:1 1 220px; padding:9px 13px; font-size:13.5px}
+.cr-regen .btn{padding:8px 14px; font-size:13px}
+.cr-last{margin:0; font-size:12px; color:var(--dim2)}
+.cr-frame{flex:none; width:clamp(190px, 17vw, 250px); display:flex; flex-direction:column; gap:8px}
+.cr-cvwrap{position:relative; border-radius:14px; overflow:hidden; border:1px solid var(--line)}
+.cr-cvwrap canvas{display:block; width:100%; height:auto}
+.cr-busy{position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:10px;
+  background:color-mix(in srgb, var(--bg) 72%, transparent); font-size:12.5px; text-align:center; padding:14px; line-height:1.8}
+.cr-frame .st-fbar .btn{flex:1}
+.cr-cap{display:flex; flex-direction:column; gap:10px}
+.cr-caphead{display:flex; align-items:baseline; gap:10px}
+.cr-caphead h3{margin:0}
+.cr-cap .cap-text{min-height:160px}
+.cr-cap .cr-last{margin-top:-2px}
+#crCapCount.bad{color:var(--danger-text)}
+.cr-note{margin:0; font-size:13px; color:var(--dim); line-height:1.9}
+.cr-pubok{margin-top:10px; background:color-mix(in srgb, var(--up, #4fd1c5) 12%, transparent); border:1px solid var(--up, #4fd1c5);
+  border-radius:12px; padding:11px 16px; font-size:14px}
+.cr-pubok a{color:var(--accent2)}
+
+.cr-side{position:sticky; top:122px; max-height:calc(100vh - 140px); overflow-y:auto; border-radius:var(--radius)}
+.cr-gal{display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:8px; padding-bottom:12px}
+.cr-card{padding:6px 6px 8px; gap:4px}
+.cr-card canvas{aspect-ratio:4/5}
+.cr-card b{font-size:12px; padding:0 2px}
+.cr-handle{flex:1; min-width:150px; background:var(--panel2); color:var(--fg); border:1px solid var(--line); border-radius:9px;
+  padding:5px 10px; font-size:13px; outline:none; text-align:left}
+.cr-handle:focus{border-color:var(--accent)}
+
+/* پنجره‌ها: کتابخانه‌ی تصویر و انتشار */
+.cr-modal{position:fixed; inset:0; z-index:60; background:rgba(4,12,16,.72); display:flex; align-items:flex-start;
+  justify-content:center; padding:5vh 16px; overflow-y:auto}
+.cr-mbox{background:var(--panel); border:1px solid var(--line); border-radius:16px; width:min(880px, 100%);
+  padding:18px 20px; display:flex; flex-direction:column; gap:12px}
+.cr-mhead{display:flex; align-items:center; gap:10px; flex-wrap:wrap}
+.cr-mhead b{font-size:16px}
+.cr-mhead .btn{padding:7px 14px; font-size:13px}
+.cr-mgen{display:flex; gap:8px; flex-wrap:wrap}
+.cr-mgen .cap-input{flex:1 1 300px}
+.cr-mbox .cap-hint{margin:0; line-height:1.9}
+.cr-mgrid{display:grid; grid-template-columns:repeat(auto-fill,minmax(150px,1fr)); gap:12px}
+.cr-mitem{background:var(--panel2); border:1px solid var(--line); border-radius:12px; padding:6px; display:flex; flex-direction:column; gap:6px}
+.cr-mitem.on{border-color:var(--accent); box-shadow:0 0 0 3px var(--accent-soft)}
+.cr-mpick{padding:0; border:0; background:none; cursor:pointer; border-radius:8px; overflow:hidden; aspect-ratio:1}
+.cr-mpick img{width:100%; height:100%; object-fit:cover; display:block}
+.cr-mpick:hover{outline:2px solid var(--accent)}
+.cr-mlabel{width:100%; background:var(--bg); color:var(--fg); border:1px solid var(--line); border-radius:7px; padding:5px 8px;
+  font-size:12.5px; font-family:var(--font); outline:none}
+.cr-mlabel:focus{border-color:var(--accent)}
+.cr-mfoot{display:flex; align-items:center; justify-content:space-between; font-size:11.5px; color:var(--dim2)}
+.cr-pubbox p{margin:0; line-height:1.9}
+.cr-pthumbs{display:flex; gap:8px; overflow-x:auto; padding-bottom:4px}
+.cr-pthumbs canvas{width:108px; height:135px; border-radius:8px; border:1px solid var(--line); flex:none}
+.cr-pcap{background:var(--bg); border:1px solid var(--line); border-radius:10px; padding:10px 14px; font-size:13.5px;
+  line-height:1.95; max-height:190px; overflow-y:auto; white-space:normal; overflow-wrap:anywhere}
+.cr-warnline{color:var(--warn)}
+.cr-probs{margin:0; padding-inline-start:20px; color:var(--danger-text); font-size:13.5px; line-height:1.9}
+.cr-sure{color:var(--fg)}
+.cr-pubbox .rowbar{margin:0}
+
+@media (max-width:1100px){
+  .cr-layout{grid-template-columns:1fr}
+  .cr-side{position:static; max-height:none}
+  .cr-gal{grid-template-columns:repeat(4,minmax(0,1fr))}
+}
+@media (max-width:720px){
+  .cr-slide{flex-direction:column}
+  .cr-frame{width:min(300px, 100%); align-self:center}
+  .cr-gal{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .cr-decks{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .cr-modal{padding:12px 10px}
+}

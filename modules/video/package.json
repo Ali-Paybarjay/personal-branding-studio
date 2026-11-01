@@ -1,0 +1,10 @@
+{
+  "name": "studio-video",
+  "private": true,
+  "type": "module",
+  "description": "Content Studio video editor: render (HyperFrames), site capture (playwright-core)",
+  "dependencies": {
+    "hyperframes": "0.8.7",
+    "playwright-core": "1.63.0"
+  }
+}

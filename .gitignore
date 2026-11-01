@@ -1,0 +1,22 @@
+# داده‌های هر کاربر — هرگز در گیت نمی‌روند، و git pull به آن‌ها دست نمی‌زند
+/data/
+/brand/*
+!/brand/README.md
+/modules/reels/output/
+.env
+.env.*
+
+# ساخته‌شده روی هر کامپیوتر
+/modules/video/node_modules/
+/modules/video/bin/
+/modules/video/models/
+/modules/video/sfx/*.mp3
+/modules/video/sfx/mk/
+/modules/video/sfx/manifest.json
+/modules/video/sfx/CREDITS.md
+__pycache__/
+*.pyc
+*.tmp
+.DS_Store
+Thumbs.db
+/.launcher-test.command

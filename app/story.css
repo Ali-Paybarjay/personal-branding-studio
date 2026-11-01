@@ -1,0 +1,95 @@
+/* ---------- استوری متنی (app/story.js) — فقط توکن‌های style.css ---------- */
+.st-wrap{display:flex; flex-direction:column; gap:26px}
+.st-warn{background:color-mix(in srgb, var(--danger) 14%, transparent); border:1px solid var(--danger);
+  border-radius:12px; padding:12px 16px; font-size:14px}
+.st-layout{display:grid; grid-template-columns:minmax(0,1fr) 460px; gap:24px; align-items:start}
+.st-grow{flex:1}
+
+/* هر استوری یک کارت: ویرایشگر + پیش‌نمایش؛ کارت تازه زیر قبلی */
+.st-list{display:flex; flex-direction:column; gap:14px; min-width:0}
+.st-stories{display:flex; flex-direction:column; gap:16px}
+.st-story{display:flex; gap:18px; align-items:stretch; background:var(--panel); border:1px solid var(--line);
+  border-radius:var(--radius); padding:14px 16px}
+.st-sedit{flex:1; min-width:0; display:flex; flex-direction:column; gap:10px}
+.st-shead{display:flex; align-items:center; gap:6px; flex-wrap:wrap}
+.st-snum{font-size:14.5px}
+.st-tool{background:var(--panel2); border:1px solid var(--line); color:var(--fg); padding:4px 12px; border-radius:9px;
+  font-size:12.5px; cursor:pointer; font-family:var(--font)}
+.st-tool:hover{border-color:var(--accent); color:var(--accent2)}
+.st-tool.st-del{color:var(--dim)}
+.st-tool.st-del:hover{border-color:var(--danger); color:var(--danger-text)}
+.st-listbar{display:flex; align-items:center; gap:10px; flex-wrap:wrap}
+
+.st-ed{position:relative; flex:1; min-height:180px; overflow:auto; background:var(--bg);
+  border:1px solid var(--line); border-radius:12px; padding:16px 20px; font-size:17px; line-height:2.05;
+  outline:none; white-space:pre-wrap; overflow-wrap:anywhere}
+.st-ed:focus{border-color:var(--accent)}
+.st-ed b,.st-ed strong{color:var(--warn); font-weight:inherit}
+/* اندازه‌ی بخش‌ها همان ضریب‌های ST_SIZES در story.js */
+.st-ed font[size="1"]{font-size:.7em} .st-ed font[size="2"]{font-size:.85em} .st-ed font[size="3"]{font-size:1em}
+.st-ed font[size="4"]{font-size:1.25em} .st-ed font[size="5"]{font-size:1.5em} .st-ed font[size="6"]{font-size:1.8em}
+.st-ed font[size="7"]{font-size:2.2em}
+.st-ed.is-empty::before{content:attr(data-ph); position:absolute; color:var(--dim2); pointer-events:none}
+.st-hint{margin:0; font-size:12.5px; color:var(--dim2); line-height:1.95}
+.st-hint kbd{font-family:var(--font); background:var(--panel2); border:1px solid var(--line); border-radius:5px; padding:0 6px; direction:ltr; unicode-bidi:isolate}   /* ⌘⇧. وسط متن فارسی جابه‌جا نشود */
+
+.st-ctl{background:var(--panel); border:1px solid var(--line); border-radius:var(--radius); padding:4px 18px 16px}
+.st-ctlhead{display:flex; align-items:baseline; gap:12px; padding:10px 0 8px; flex-wrap:wrap}
+.st-ctlhead b{font-size:15px}
+.st-ctlhead span{font-size:12.5px; color:var(--dim)}
+.st-row{display:flex; align-items:center; gap:14px; padding:9px 0; border-top:1px solid var(--line)}
+.st-lbl{flex:none; width:86px; font-size:13px; color:var(--dim)}
+.st-in{display:flex; align-items:center; gap:7px; flex-wrap:wrap; min-width:0}
+.st-chip{background:var(--panel2); border:1px solid var(--line); color:var(--dim); padding:4px 13px;
+  border-radius:20px; font-size:12.5px; cursor:pointer; font-family:var(--font)}
+.st-chip:hover{color:var(--fg)}
+.st-chip.on{border-color:var(--accent); color:var(--accent2); background:var(--accent-soft)}
+.st-sw{width:24px; height:24px; border-radius:50%; background:var(--c); border:2px solid var(--line); cursor:pointer; padding:0}
+.st-sw.on{border-color:var(--accent); box-shadow:0 0 0 3px var(--accent-soft)}
+.st-pick{width:32px; height:28px; padding:0 2px; border:1px solid var(--line); border-radius:8px; background:var(--panel2); cursor:pointer}
+.st-sep{width:1px; height:20px; background:var(--line); margin:0 4px}
+.st-in input[type=range]{width:150px; accent-color:var(--accent)}
+.st-in output{font-size:13px; min-width:40px}
+.st-up{padding:6px 14px; font-size:13px}
+.st-dim{font-size:12.5px; color:var(--dim)}
+.st-save{display:flex; align-items:center; gap:12px; padding-top:14px; border-top:1px solid var(--line); flex-wrap:wrap}
+
+.st-side{position:sticky; top:122px; max-height:calc(100vh - 140px); overflow-y:auto; border-radius:var(--radius)}   /* زیر هدر و نوار ماژول‌ها، مثل .bc-side */
+.st-frame{flex:none; width:clamp(180px, 16vw, 240px); display:flex; flex-direction:column; gap:8px}
+.st-cvwrap{position:relative; border-radius:16px; overflow:hidden; border:1px solid var(--line)}
+.st-cvwrap canvas{display:block; width:100%; height:auto}
+.st-badge{position:absolute; top:10px; inset-inline-start:10px; background:var(--warn); color:var(--on-accent);
+  font-size:11.5px; font-weight:700; padding:1px 10px; border-radius:20px}
+.st-g{position:absolute; inset-inline:0; height:13.02%; display:none; align-items:center; justify-content:center;
+  font-style:normal; font-size:11px; color:var(--fg); background:color-mix(in srgb, var(--danger) 22%, transparent)}
+.st-g.t{top:0; border-bottom:1px dashed var(--danger-text)}
+.st-g.b{bottom:0; border-top:1px dashed var(--danger-text)}
+.st-wrap.guides .st-g{display:flex}
+.st-fbar{display:flex; align-items:center; gap:8px}
+.st-fbar .btn{padding:7px 14px; font-size:13px}
+.st-fbar .btn.primary{flex:1}
+.st-fnote{margin:0; font-size:12.5px; color:var(--warn); line-height:1.8}
+.st-fnote:empty{display:none}
+.st-check{display:flex; align-items:center; gap:7px; font-size:13px; color:var(--dim); cursor:pointer}
+.st-check input{accent-color:var(--accent)}
+
+.st-galwrap{display:flex; flex-direction:column; gap:12px}
+.st-galhead h3{margin:0; font-size:17px}
+.st-galhead p{margin:4px 0 0; color:var(--dim); font-size:13.5px; max-width:820px}
+.st-gal{display:grid; grid-template-columns:repeat(auto-fill,minmax(112px,1fr)); gap:12px}
+.st-card{background:var(--panel); border:1px solid var(--line); border-radius:14px; padding:8px 8px 10px; cursor:pointer;
+  display:flex; flex-direction:column; gap:5px; text-align:start; color:var(--fg); font-family:var(--font)}
+.st-card:hover{border-color:var(--accent)}
+.st-card.on{border-color:var(--accent); box-shadow:0 0 0 3px var(--accent-soft)}
+.st-card canvas{width:100%; height:auto; aspect-ratio:9/16; border-radius:9px; display:block}
+.st-card b{font-size:13.5px; padding:2px 4px 0}
+.st-card span{font-size:11px; color:var(--dim); line-height:1.65; padding:0 4px}
+
+@media (max-width:1100px){
+  .st-layout{grid-template-columns:1fr}
+  .st-side{position:static; max-height:none}
+}
+@media (max-width:720px){
+  .st-story{flex-direction:column}
+  .st-frame{width:min(280px, 100%)}
+}

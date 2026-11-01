@@ -1,0 +1,302 @@
+/* ---------- تدوین ویدیو (app/video.js) — فقط توکن‌های style.css؛ کلاس‌های cr-* از carousel.css ---------- */
+.vd-wrap{display:flex; flex-direction:column; gap:22px}
+.vd-input{background:var(--bg); color:var(--fg); border:1px solid var(--line); border-radius:11px; padding:11px 14px;
+  font-size:14.5px; font-family:var(--font); outline:none; width:100%}
+.vd-input:focus{border-color:var(--accent)}
+.vd-input.sm{width:auto; flex:1 1 160px; padding:6px 10px; font-size:14px; border-radius:9px}
+.btn.sm{padding:6px 12px; font-size:13px; border-radius:9px}
+.btn.on{border-color:var(--accent); color:var(--accent2); background:var(--accent-soft)}
+.vd-row{display:flex; align-items:center; gap:8px; flex-wrap:wrap}
+
+/* آپلود */
+.vd-up{display:flex; flex-direction:column; gap:12px}
+.vd-up h3{margin:0}
+.vd-kinds{display:flex; gap:8px; flex-wrap:wrap}
+.vd-kinds .btn small{font-weight:500; color:var(--dim); margin-inline-start:6px}
+.vd-partsw{display:flex; flex-direction:column; gap:8px}
+.vd-partsw > b{font-size:14px}
+.vd-parts{display:flex; gap:8px; flex-wrap:wrap}
+.vd-part{display:flex; align-items:center; gap:7px; padding:7px 12px; border:1px solid var(--line); border-radius:10px;
+  background:var(--bg); cursor:pointer; font-size:13.5px; color:var(--dim)}
+.vd-part.on{border-color:var(--accent); background:var(--accent-soft); color:var(--fg)}
+.vd-part input{margin:0; accent-color:var(--accent)}
+.vd-part small{font-size:11.5px; color:var(--dim2)}
+.vd-nocut{padding:8px 12px; border:1px dashed var(--line); border-radius:10px; font-size:13.5px; color:var(--dim)}
+.vd-regenmsg{display:flex; align-items:center; gap:8px; font-size:13.5px; color:var(--accent2)}
+.vd-regenmsg:empty{display:none}
+.vd-regenmsg.err{color:var(--danger-text)}
+.vd-drop{display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; text-align:center;
+  border:2px dashed var(--line); border-radius:14px; padding:34px 18px; cursor:pointer; background:var(--bg)}
+.vd-drop:hover,.vd-drop.over{border-color:var(--accent); background:var(--accent-soft)}
+.vd-drop b{font-size:15.5px}
+.vd-drop span{font-size:13px; color:var(--dim)}
+.vd-bar{flex:1; height:6px; border-radius:6px; background:var(--panel2); overflow:hidden; display:block; min-width:120px}
+.vd-bar i{display:block; height:100%; width:0; background:var(--accent); transition:width .2s}
+
+/* فهرست */
+.vd-listwrap h3{margin:0 0 12px; font-size:17px}
+.vd-list{display:grid; grid-template-columns:repeat(auto-fill,minmax(230px,1fr)); gap:14px}
+.vd-card{position:relative; background:var(--panel); border:1px solid var(--line); border-radius:14px; padding:9px;
+  cursor:pointer; display:flex; flex-direction:column; gap:8px; min-width:0}
+.vd-card:hover{border-color:var(--accent)}
+.vd-thumb{border-radius:9px; overflow:hidden; background:var(--bg); display:flex; align-items:center; justify-content:center;
+  aspect-ratio:16/9}
+.vd-thumb.reel{aspect-ratio:4/5}
+.vd-thumb img{width:100%; height:100%; object-fit:cover; display:block}
+.vd-cmeta{display:flex; flex-direction:column; gap:3px; padding:0 3px; min-width:0}
+.vd-cmeta b{font-size:14px; line-height:1.7; overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
+.vd-cmeta span{font-size:12px; color:var(--dim)}
+.vd-cmeta .cr-tag{margin-top:2px}
+.vd-del{position:absolute; top:14px; inset-inline-start:14px; padding:4px 9px; font-size:12px; background:color-mix(in srgb,var(--bg) 82%,transparent)}
+
+/* پروژه */
+.vd-top{display:flex; align-items:center; gap:10px; flex-wrap:wrap}
+.vd-top .grow{flex:1}
+.vd-name{flex:1 1 240px; min-width:0; background:var(--panel); color:var(--fg); border:1px solid var(--line);
+  border-radius:10px; padding:10px 14px; font-size:15px; font-family:var(--font); font-weight:700; outline:none}
+.vd-name:focus{border-color:var(--accent)}
+.vd-grid{display:grid; grid-template-columns:minmax(300px,400px) 1fr; gap:22px; align-items:start}
+.vd-proj .vd-grid:has(.vd-stage.screen){grid-template-columns:minmax(420px,1.15fr) 1fr}
+.vd-player{position:sticky; top:132px; display:flex; flex-direction:column; gap:10px}
+.vd-stage{position:relative; width:100%; overflow:hidden; border-radius:14px; background:#000; border:1px solid var(--line);
+  direction:ltr; min-height:200px}
+.vd-stage.reel{aspect-ratio:9/16; min-height:0}
+.vd-stage.screen{aspect-ratio:16/9; min-height:0}
+.vd-stage iframe{position:absolute; top:0; left:0; border:0; transform-origin:0 0; background:#000}
+.vd-ph{position:absolute; inset:0; display:flex; align-items:center; justify-content:center; gap:10px; color:var(--dim); font-size:14px}
+.vd-guide{position:absolute; inset:0; pointer-events:none; z-index:2}
+.vd-guide i{position:absolute; display:flex; align-items:flex-start; justify-content:center; font-style:normal;
+  background:color-mix(in srgb,var(--danger) 22%,transparent); border:1px dashed color-mix(in srgb,var(--danger) 75%,transparent)}
+.vd-guide i span{font-size:10.5px; color:var(--fg); background:color-mix(in srgb,var(--bg) 70%,transparent); padding:0 5px;
+  border-radius:4px; margin-top:3px; white-space:nowrap; direction:rtl}
+.vd-guide i.v{align-items:center}
+.vd-guide i.v span{writing-mode:vertical-rl; margin-top:0; padding:5px 0}
+.vd-guide b{position:absolute; border:1.5px dashed var(--up, #4fd1c5); border-radius:6px}
+.vd-guide-t{display:flex; align-items:center; gap:6px; font-size:13px; color:var(--dim); cursor:pointer}
+.vd-guide-t small{color:var(--dim2)}
+.vd-ctrl{display:flex; align-items:center; gap:10px}
+.vd-ctrl .btn{padding:6px 14px; min-width:46px}
+.vd-ctrl input[type=range]{flex:1; accent-color:var(--accent)}
+.vd-time{font-size:13px; color:var(--dim); white-space:nowrap; font-variant-numeric:tabular-nums}
+.vd-stats{font-size:13px; color:var(--dim)}
+.vd-stats b{color:var(--fg)}
+.vd-secs{display:flex; flex-direction:column; gap:16px; min-width:0}
+.vd-sec{display:flex; flex-direction:column; gap:12px}
+.vd-sec h3{margin:0}
+.vd-sum{margin:0; font-size:14px; color:var(--dim); background:var(--panel2); border-inline-start:3px solid var(--accent);
+  border-radius:0 10px 10px 0; padding:9px 13px; line-height:1.9}
+.vd-help{margin:0; font-size:12.5px}
+
+/* متن و برش */
+.vd-tools{display:flex; align-items:center; gap:6px; flex-wrap:wrap; background:var(--panel2); border:1px solid var(--line);
+  border-radius:11px; padding:8px 10px; position:sticky; top:118px; z-index:3}
+.vd-tr{max-height:420px; overflow:auto; background:var(--bg); border:1px solid var(--line); border-radius:12px; padding:14px 16px;
+  font-size:17px; line-height:2.35; user-select:none; -webkit-user-select:none}
+.vw{cursor:pointer; border-radius:6px; padding:2px 1px; transition:background .12s}
+.vw:hover{background:var(--panel2)}
+.vw.sel{background:var(--accent-soft); outline:1px solid var(--accent)}
+.vw.now{background:color-mix(in srgb,var(--warn) 18%,transparent); box-shadow:0 2px 0 var(--warn)}
+.vw.em{color:var(--warn); font-weight:700}
+.vw.alt{text-decoration:underline dotted var(--dim2); text-underline-offset:6px}
+.vw.cut{text-decoration:line-through; text-decoration-thickness:2px; opacity:.55}
+.vw.cut.r-retake,.vd-why.r-retake{color:var(--danger-text)}
+.vw.cut.r-false_start,.vd-why.r-false_start{color:var(--warn)}
+.vw.cut.r-stutter,.vd-why.r-stutter{color:var(--warn)}
+.vw.cut.r-filler,.vd-why.r-filler{color:var(--dim2)}
+.vw.cut.r-offtopic,.vd-why.r-offtopic{color:var(--accent2)}
+.vw.cut.r-manual,.vd-why.r-manual{color:var(--danger-text)}
+.vw.kept{box-shadow:inset 0 -2px 0 var(--up, #4fd1c5)}
+.vp{font-style:normal; color:var(--dim2); padding:0 3px; font-weight:900}
+.vp.keep{color:var(--accent)}
+.vd-cutlist{display:flex; flex-direction:column; gap:6px; font-size:13.5px}
+.vd-cutrow{display:flex; align-items:baseline; gap:8px; flex-wrap:wrap; background:var(--panel2); border:1px solid var(--line);
+  border-radius:10px; padding:7px 10px; cursor:pointer}
+.vd-cutrow.off{opacity:.5}
+.vd-cutrow small{flex-basis:100%; color:var(--dim); font-size:12.5px; line-height:1.8}
+.vd-why{font-weight:800; font-size:12.5px}
+.vd-cuttxt{color:var(--fg)}
+.vd-cuttxt:hover{color:var(--accent2)}
+.vd-regen{display:flex; flex-direction:column; gap:8px; border-top:1px solid var(--line); padding-top:12px}
+.vd-note{background:var(--bg); color:var(--fg); border:1px solid var(--line); border-radius:11px; padding:10px 13px; min-height:62px;
+  font-size:14px; font-family:var(--font); line-height:1.9; resize:vertical; outline:none}
+.vd-note:focus{border-color:var(--accent)}
+
+/* زیرنویس */
+.vd-toggles label{display:flex; align-items:center; gap:6px; font-size:13.5px; color:var(--dim); margin-inline-end:10px}
+.vd-style.s-punch{font-weight:900}
+.vd-caplist{max-height:260px; overflow:auto; display:flex; flex-direction:column; gap:3px; background:var(--bg);
+  border:1px solid var(--line); border-radius:12px; padding:8px}
+.vd-cap{display:flex; gap:10px; align-items:baseline; padding:4px 8px; border-radius:8px; cursor:pointer; font-size:14.5px}
+.vd-cap:hover{background:var(--panel2)}
+.vd-cap.now{background:color-mix(in srgb,var(--warn) 14%,transparent)}
+.vd-ct{color:var(--dim2); font-size:12px; min-width:34px; font-variant-numeric:tabular-nums}
+.vd-ctx{flex:1; min-width:0}
+.vd-cap [data-capedit]{cursor:text; border-radius:6px; padding:1px 4px; margin:-1px -4px}
+.vd-cap [data-capedit]:hover{outline:1px dashed var(--line)}
+.vd-mine{color:var(--warn); font-size:12px}
+.vd-capedit{display:flex; gap:6px; align-items:center; flex-wrap:wrap}
+.vd-capedit .vd-capin{flex:1 1 200px; font-family:var(--font)}
+.vd-cap .vd-pos{background:var(--panel); color:var(--dim); border:1px solid var(--line); border-radius:8px; padding:2px 6px;
+  font-size:12px; font-family:var(--font); outline:none; cursor:pointer; max-width:118px}
+.vd-cap .vd-pos.moved{color:var(--accent2); border-color:var(--accent)}
+.vd-cap.man .vd-pos{color:var(--warn); border-color:var(--warn)}
+.vd-tpos{display:flex; align-items:center; gap:6px; flex-wrap:wrap; flex-basis:100%; padding-top:6px; border-top:1px solid var(--line)}
+
+/* عکس، ویدیو و گرافیک */
+.vd-mdrop{padding:22px 16px}
+.vd-mup{display:flex; flex-direction:column; gap:6px}
+.vd-mup:empty{display:none}
+.vd-mupr{display:flex; align-items:center; gap:8px; font-size:13px; color:var(--dim)}
+.vd-mgrid{display:grid; grid-template-columns:repeat(auto-fill,minmax(250px,1fr)); gap:12px}
+.vd-mc{display:flex; flex-direction:column; gap:8px; background:var(--panel2); border:1px solid var(--line); border-radius:12px; padding:8px; min-width:0}
+.vd-mc.err{border-color:var(--danger)}
+.vd-mth{position:relative; border-radius:9px; overflow:hidden; background:var(--bg); min-height:120px; display:flex; align-items:center;
+  justify-content:center; cursor:pointer}
+.vd-mimg{position:relative; line-height:0}
+.vd-mimg img{max-width:100%; max-height:210px; display:block}
+.vd-mk{position:absolute; border:2px solid; pointer-events:none}
+.vd-mk.b{border-color:var(--danger); background:color-mix(in srgb,var(--danger) 38%,transparent)}
+.vd-mk.h{border-color:var(--warn); background:color-mix(in srgb,var(--warn) 30%,transparent)}
+.vd-mk.f{border-color:var(--accent); border-style:dashed}
+.vd-mtag{position:absolute; top:6px; inset-inline-start:6px; font-size:11.5px; background:color-mix(in srgb,var(--bg) 82%,transparent); color:var(--fg);
+  padding:1px 8px; border-radius:6px}
+.vd-mst{position:absolute; left:0; right:0; bottom:0; display:flex; align-items:center; gap:6px; font-size:12px; padding:6px 8px;
+  background:color-mix(in srgb,var(--bg) 86%,transparent); color:var(--fg)}
+.vd-mbody{display:flex; flex-direction:column; gap:4px; min-width:0}
+.vd-mbody b{font-size:14px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
+.vd-mbody small{font-size:12px; color:var(--dim); line-height:1.7}
+.vd-mbody .vd-mbx{color:var(--dim2)}
+.vd-mbody .vd-merr{color:var(--danger-text)}
+.vd-mnote{background:var(--bg); color:var(--fg); border:1px solid var(--line); border-radius:9px; padding:7px 10px; font-size:13.5px;
+  font-family:var(--font); line-height:1.8; resize:vertical; outline:none; min-height:64px}
+.vd-mnote:focus{border-color:var(--accent)}
+.vd-vislist{max-height:340px; overflow:auto; display:flex; flex-direction:column; gap:3px; background:var(--bg); border:1px solid var(--line);
+  border-radius:12px; padding:8px}
+.vd-ov{display:flex; align-items:center; gap:8px; padding:4px 6px; border-radius:8px; font-size:14px}
+.vd-ov:hover{background:var(--panel2)}
+.vd-ov.off{opacity:.55}
+.vd-ovth{flex:0 0 auto; width:44px; height:44px; border-radius:8px; overflow:hidden; background:var(--panel2); display:flex; align-items:center;
+  justify-content:center}
+.vd-ovth img{width:100%; height:100%; object-fit:cover}
+.vd-gico{font-size:20px; color:var(--accent2)}
+.vd-ovt{flex:1; min-width:0; cursor:pointer; display:flex; flex-direction:column; line-height:1.7}
+.vd-ovt b{font-weight:600; overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
+.vd-ovt small{color:var(--dim); font-size:12px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
+.vd-gf{flex-basis:100%; display:flex; flex-wrap:wrap; gap:8px; align-items:flex-end; padding:8px 4px 4px; border-top:1px solid var(--line)}
+.vd-gf label{display:flex; flex-direction:column; gap:3px; font-size:12px; color:var(--dim)}
+.vd-gf label:has(input[type=checkbox]){flex-direction:row; align-items:center; gap:6px}
+.vd-gf .vd-input.sm{flex:none; width:150px}
+/* پنجره‌ی محو و هایلایت */
+.vd-modal{position:fixed; inset:0; z-index:1000; background:color-mix(in srgb,var(--bg) 72%,transparent); display:flex; align-items:center;
+  justify-content:center; padding:16px}
+.vd-mdl{background:var(--panel); border:1px solid var(--line); border-radius:16px; padding:14px; width:min(920px,100%); max-height:100%;
+  overflow:auto; display:flex; flex-direction:column; gap:10px}
+.vd-mdl .grow{flex:1}
+.vd-bxw{position:relative; align-self:center; line-height:0; max-width:100%}
+.vd-bxw img{max-width:100%; max-height:64vh; display:block; user-select:none; -webkit-user-select:none}
+.vd-bxl{position:absolute; inset:0; cursor:crosshair; touch-action:none}
+.vd-bx{position:absolute; border:2px solid; cursor:pointer}
+.vd-bx.blur{border-color:var(--danger); background:color-mix(in srgb,var(--danger) 32%,transparent)}
+.vd-bx.hl{border-color:var(--warn); background:color-mix(in srgb,var(--warn) 30%,transparent)}
+.vd-bx.focus{border-color:var(--accent); border-style:dashed}
+.vd-bx.draft{opacity:.7; pointer-events:none}
+/* سایت و هایلایت */
+.vd-sgrid{display:grid; grid-template-columns:repeat(auto-fill,minmax(300px,1fr)); gap:12px}
+.vd-sc{display:flex; flex-direction:column; gap:8px; background:var(--panel2); border:1px solid var(--line); border-radius:12px; padding:8px; min-width:0}
+.vd-sc.warn{border-color:var(--warn)}
+.vd-sth{position:relative; border-radius:9px; overflow:hidden; background:var(--bg); min-height:110px; display:flex; align-items:center;
+  justify-content:center}
+.vd-sth[data-sbox]{cursor:pointer}
+.vd-sth .vd-mimg img{max-height:220px}
+.vd-sst{display:flex; align-items:center; gap:6px}
+.vd-sst.blocked,.vd-sst.error,.vd-sst.nomatch{color:var(--warn)}
+.vd-sl{display:flex; flex-direction:column; gap:3px; font-size:12px; color:var(--dim)}
+.vd-sl .vd-input.sm{flex:none; width:100%}
+.vd-sup{cursor:pointer}
+.vd-tsite{flex-basis:100%; display:flex; flex-direction:column; gap:6px; padding-top:8px; border-top:1px solid var(--line)}
+.vd-tsite .vd-input.sm{flex:none; width:100%}
+.vd-tsite .vd-note{min-height:52px}
+/* ضبط صفحه */
+.vd-h4{margin:6px 0 0; font-size:15px}
+.vd-zth{width:78px; height:50px}
+.vd-zth .vd-mimg{width:100%; height:100%}
+.vd-zth .vd-mimg img{width:100%; height:100%; max-height:none; object-fit:cover}
+.vd-zth .vd-mk{border-width:1.5px}
+.vd-mk.b{border-color:var(--danger)}
+/* افکت صوتی */
+.vd-fxlist{max-height:320px; overflow:auto; display:flex; flex-direction:column; gap:3px; background:var(--bg);
+  border:1px solid var(--line); border-radius:12px; padding:8px}
+.vd-fx{display:flex; align-items:center; gap:8px; padding:4px 6px; border-radius:8px; font-size:14px}
+.vd-fx:hover{background:var(--panel2)}
+.vd-fx.off{opacity:.55}
+.vd-fx.now{background:color-mix(in srgb,var(--warn) 14%,transparent)}
+.vd-fxw{flex:1; min-width:0; cursor:pointer; display:flex; flex-direction:column; line-height:1.75}
+.vd-fxw b{font-weight:600; overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
+.vd-fxw small{color:var(--dim); font-size:12px}
+.vd-fxs,.vd-fxg{background:var(--panel); color:var(--fg); border:1px solid var(--line); border-radius:8px; padding:3px 6px;
+  font-size:12.5px; font-family:var(--font); outline:none; cursor:pointer; max-width:150px}
+.vd-fxg{max-width:92px; color:var(--dim)}
+.vd-fx .btn.sm{padding:4px 9px}
+
+/* خروجی */
+.vd-final{width:100%; max-height:560px; border-radius:12px; background:#000; border:1px solid var(--line)}
+.vd-final.reel{max-width:320px}
+.vd-stale{color:var(--warn)}
+.vd-soon ul{margin:0}
+
+@media (max-width:860px){
+  .vd-grid,.vd-proj .vd-grid:has(.vd-stage.screen){grid-template-columns:1fr}
+  .vd-player{position:static}
+  .vd-stage.reel{max-width:360px; margin:0 auto}
+  .vd-tools{position:static}
+  .vd-tr{max-height:340px}
+  .vd-fx{flex-wrap:wrap}
+  .vd-fxw{flex-basis:calc(100% - 90px)}
+  .vd-fx .vd-fxs{flex:1 1 100px; min-width:0; max-width:none}
+  .vd-mgrid,.vd-sgrid{grid-template-columns:1fr}
+  .vd-ov{flex-wrap:wrap}
+  .vd-ovt{flex-basis:calc(100% - 90px)}
+  .vd-fx .vd-fxg{width:80px}
+}
+
+/* کاور، کپشن و انتشار (فاز ۶) */
+.vd-post{display:flex; gap:16px; flex-wrap:wrap; align-items:flex-start}
+.vd-pcov{flex:0 0 190px; display:flex; flex-direction:column; gap:8px}
+.vd-pside{flex:1 1 260px; min-width:0; display:flex; flex-direction:column; gap:8px}
+.vd-pstage{position:relative; width:100%; aspect-ratio:9/16; overflow:hidden; border-radius:12px; background:var(--bg); border:1px solid var(--line)}
+.vd-pstage iframe{position:absolute; top:0; left:0; border:0; transform-origin:0 0; pointer-events:none}
+.vd-pgrid{position:absolute; left:0; right:0; top:12.5%; bottom:12.5%; border-top:1.5px dashed var(--warn); border-bottom:1.5px dashed var(--warn);
+  pointer-events:none; opacity:.85}
+.vd-gridt{display:flex; align-items:center; gap:6px; font-size:12.5px; color:var(--dim); cursor:pointer}
+.vd-lbl{font-size:13.5px; font-weight:700}
+.vd-lbl small{font-weight:500; color:var(--dim2); margin-inline-start:6px}
+.vd-cands{display:flex; flex-wrap:wrap; gap:6px}
+.vd-cand{position:relative; width:52px; aspect-ratio:9/16; padding:0; border-radius:8px; overflow:hidden; cursor:pointer;
+  border:2px solid var(--line); background:var(--panel2); display:flex; align-items:center; justify-content:center}
+.vd-proj .vd-cand{font-family:var(--font)}
+.vd-cand img{width:100%; height:100%; object-fit:cover; display:block}
+.vd-cand span{position:absolute; bottom:0; left:0; right:0; font-size:10.5px; line-height:1.7; color:var(--fg);
+  background:color-mix(in srgb,var(--bg) 70%,transparent); text-align:center}
+.vd-cand:hover{border-color:var(--accent2)}
+.vd-cand.on{border-color:var(--accent); box-shadow:0 0 0 2px var(--accent-soft)}
+.vd-candup span{position:static; background:none; font-size:11px; padding:0 3px; text-align:center}
+.vd-candup img + span{position:absolute; background:color-mix(in srgb,var(--bg) 70%,transparent)}
+.vd-covt{min-height:58px; resize:vertical; line-height:1.8}
+.vd-chips{display:flex; flex-wrap:wrap; gap:6px}
+.vd-chip{font-family:var(--font); font-size:13px; line-height:1.7; text-align:start; color:var(--fg); background:var(--panel2);
+  border:1px solid var(--line); border-radius:10px; padding:5px 10px; cursor:pointer}
+.vd-chip em{font-style:normal; color:var(--warn)}
+.vd-chip:hover{border-color:var(--accent)}
+.vd-chip.on{border-color:var(--accent); background:var(--accent-soft)}
+textarea.vd-cap{min-height:190px; resize:vertical; line-height:1.9}   /* کپشن پست؛ بی textarea ردیف‌های فهرست زیرنویس هم ۱۹۰px می‌شدند */
+.vd-capmeta{font-size:12.5px; color:var(--dim)}
+.vd-probs{margin:0; padding-inline-start:20px; display:flex; flex-direction:column; gap:3px; font-size:13px; color:var(--dim)}
+.vd-probs:empty{display:none}
+.vd-probs li.block{color:var(--danger-text)}
+#vdPubStatus .build-status{margin-top:0; display:flex; flex-direction:column; gap:8px}
+#vdPubStatus .build-status.ok{border-color:var(--accent)}
+#vdPubStatus .build-status a{color:var(--accent2)}
+#vdPubStatus .build-status .btn{align-self:flex-start}
+.vd-pend{display:flex; align-items:center; gap:8px; flex-wrap:wrap; font-size:13px; color:var(--warn); margin-top:8px}
+.vd-pubd{font-size:13px; color:var(--dim); margin-top:8px; line-height:1.9}
+.vd-pubd a{color:var(--accent2)}

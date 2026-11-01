@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>استودیوی محتوا</title>
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="/style.css">
+<link rel="stylesheet" href="/story.css">
+<link rel="stylesheet" href="/advisor.css">
+<link rel="stylesheet" href="/carousel.css">
+<link rel="stylesheet" href="/video.css">
+<link rel="stylesheet" href="/onboarding.css">
+</head>
+<body>
+
+<header class="top">
+  <div class="top-in">
+    <div class="brand"><span class="dot"></span><h1>استودیوی محتوا</h1></div>
+    <div class="picker"><select id="videoSelect" aria-label="انتخاب ویدیو" hidden></select></div>
+  </div>
+</header>
+
+<div class="nav-wrap"><nav class="nav" id="nav"></nav></div>
+
+<main id="page" class="page"></main>
+
+<div id="tp" class="tp" hidden>
+  <div class="tp-bar">
+    <button id="tpClose" title="بستن (Esc)">✕</button>
+    <span id="tpTitle" class="tp-title"></span>
+    <span class="tp-spacer"></span>
+    <span id="tpTime" class="tp-time">۰:۰۰</span>
+    <button id="tpMirror" title="آینه (M)">آینه</button>
+    <button id="tpPlay" class="primary" title="پخش/توقف (Space)">▶ شروع</button>
+  </div>
+  <div id="tpProgress" class="tp-progress"><i></i></div>
+  <div id="tpScroll" class="tp-scroll"><div id="tpInner" class="tp-inner"></div></div>
+  <div class="tp-guide"></div>
+  <div class="tp-help">
+    <kbd>Space</kbd> پخش/توقف · <kbd>↑</kbd><kbd>↓</kbd> سرعت · <kbd>+</kbd><kbd>−</kbd> اندازه · <kbd>R</kbd> از اول · <kbd>M</kbd> آینه · <kbd>Esc</kbd> بستن
+    <span id="tpSpeed" class="tp-speed"></span>
+  </div>
+</div>
+
+<div id="toast" class="toast" hidden></div>
+<script src="/app.js"></script>
+<script src="/brand.js"></script>
+<script src="/reel-editor.js"></script>
+<script src="/translate.js"></script>
+<script src="/story.js"></script>
+<script src="/instagram.js"></script>
+<script src="/advisor.js"></script>
+<script src="/carousel.js"></script>
+<script src="/video.js"></script>
+<script src="/onboarding.js"></script>
+</body>
+</html>
