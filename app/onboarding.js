@@ -218,7 +218,7 @@ function geminiFormHTML(set, hint) {
   return `<p class="cap-hint" style="margin-top:0">کلید رایگان را از <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener">aistudio.google.com/apikey</a> بگیر: با حساب گوگل وارد شو، «Create API key» را بزن و کلید را کپی کن.
     ${set ? `کلید فعلی: <bdi dir="ltr">${esc(hint)}</bdi>` : ''}</p>
   <div class="rowbar" style="margin:10px 0 0">
-    <input class="cap-input" id="gmKey" dir="ltr" placeholder="${set ? 'کلید تازه (برای جایگزینی)' : 'AIza…'}" autocomplete="off" style="flex:1">
+    <input class="cap-input" id="gmKey" dir="ltr" placeholder="${set ? 'کلید تازه (برای جایگزینی)' : 'AQ.… یا AIza…'}" autocomplete="off" style="flex:1">
     <button class="btn primary" id="gmSave">${set ? 'جایگزینی' : 'ذخیره و آزمایش'}</button>
     ${set ? '<button class="btn danger" id="gmDel">پاک کردن</button>' : ''}
   </div>`;

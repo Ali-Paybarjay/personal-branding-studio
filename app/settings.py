@@ -270,12 +270,14 @@ def handle_post(p, body):
         d = save({"profile": prof})
         return 200, {"ok": True, "profile": d.get("profile")}
     if p == "/api/settings/gemini":
-        key = str(body.get("key") or "").strip()
+        # فاصله و نویسه‌های نامرئی (نیم‌فاصله، نشانه‌ی جهت RTL/LTR، BOM) که موقع چسباندن با صفحه‌کلید فارسی می‌آیند
+        key = re.sub(r"[\s​-‏‪-‮⁦-⁩﻿]", "", str(body.get("key") or ""))
         if not key:
             write_env("GEMINI_API_KEY", "")
             return 200, {"ok": True, "set": False}
-        if not re.fullmatch(r"[\w\-]{20,200}", key):
-            return 400, {"error": "این شبیه کلید Gemini نیست. کلید را کامل از Google AI Studio کپی کن."}
+        # کلیدهای قدیمی AIza… هستند؛ AI Studio از ۲۰۲۶ کلید تازه را با «AQ.» می‌سازد (نقطه دارد)
+        if not re.fullmatch(r"[A-Za-z0-9_.\-]{20,400}", key):
+            return 400, {"error": "این شبیه کلید Gemini نیست (کلید با AIza یا AQ. شروع می‌شود). کلید را کامل با دکمه‌ی Copy در Google AI Studio کپی کن، نه از روی نسخه‌ی نصفه‌ای که در فهرست نشان داده می‌شود."}
         ok, err = test_gemini(key)
         if not ok:
             return 400, {"error": err}
