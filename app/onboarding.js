@@ -333,6 +333,24 @@ window.mountNextStep = async function (el) {
 };
 
 /* ---------- تنظیمات ---------- */
+// Astra (Codex) فقط برای کارهایی که متن خالص برمی‌گردانند، و فقط وقتی Codex وارد حساب است (یا همین حالا انتخاب شده)
+function modelChoices(m, step) {
+  const st = m.codex_status || {};
+  const withCodex = (m.codex_steps || []).includes(step) && (st.logged_in || (m.codex || {})[m.models[step]]);
+  return withCodex ? { ...m.choices, ...m.codex } : m.choices;
+}
+function codexHTML(m) {
+  const st = m.codex_status || {};
+  const tasks = (m.codex_steps || []).map(k => `«${esc(m.steps[k])}»`).join(' و ');
+  return `<h3 style="margin-top:18px">GPT-6 Astra (اختیاری)</h3>
+    <p class="cap-hint" style="margin-top:0">اگر اشتراک ChatGPT و Codex را روی همین کامپیوتر داری، ${tasks} را می‌شود با Astra نوشت؛
+    از سهمیه‌ی ChatGPT کم می‌کند، نه Claude. Astra به فایل‌های استودیو دسترسی ندارد و هسته‌ی برند و فایل‌های ایده داخل پرامپتش می‌رود.
+    یوتیوب ← ریلز همیشه با Claude است.</p>
+    <p class="cap-hint">${st.logged_in ? '✓ ' : ''}${esc(st.note || '')}</p>
+    ${st.installed ? `<div class="rowbar" style="margin:6px 0 0"><button class="btn" id="cxBtn">آزمایش Astra</button></div>
+    <p class="cap-hint" id="cxOut"></p>` : ''}`;
+}
+
 window.viewSettings = async function viewSettings() {
   $('#page').innerHTML = `<div class="page-head"><h2>تنظیمات</h2><p>در حال بررسی…</p></div>`;
   const [s, setup, models] = await Promise.all([api('/api/settings'), loadSetup(), api('/api/models')]);
@@ -349,8 +367,9 @@ window.viewSettings = async function viewSettings() {
       <p class="cap-hint" style="margin-top:0">Sonnet سریع‌تر است و سهمیه‌ی اشتراکت را دیرتر تمام می‌کند. Opus دقیق‌تر است ولی سهمیه را زودتر تمام می‌کند؛ روی اشتراک Pro برای کارهای مهم نگهش دار.</p>
       <div class="rowbar"><button class="btn" data-all="claude-sonnet-5-5">همه Sonnet</button><button class="btn" data-all="claude-opus-5-5">همه Opus</button></div>
       <div class="models-grid">${Object.entries(models.steps).map(([k, l]) => `<label class="model-row"><span>${esc(l)}</span>
-        <select data-model="${k}">${Object.entries(models.choices).map(([id, name]) =>
+        <select data-model="${k}">${Object.entries(modelChoices(models, k)).map(([id, name]) =>
           `<option value="${id}" ${models.models[k] === id ? 'selected' : ''}>${esc(name)}</option>`).join('')}</select></label>`).join('')}</div>
+      ${codexHTML(models)}
     </section>
     <section class="panel set-sec"><h3>کلید Gemini</h3>${geminiFormHTML(s.gemini.set, s.gemini.hint)}</section>
     <section class="panel set-sec"><h3>اینستاگرام</h3>
@@ -368,6 +387,14 @@ window.viewSettings = async function viewSettings() {
     const r = await post('/api/models', { step: sel.dataset.model, model: sel.value });
     toast(r.ok ? '✓ مدل عوض شد' : (r.data.error || 'ذخیره نشد'));
   });
+  const cx = $('#cxBtn');
+  if (cx) cx.onclick = async () => {
+    cx.disabled = true; $('#cxOut').textContent = 'در حال آزمایش… (چند ثانیه)';
+    const r = await post('/api/models/codex-test', {});
+    cx.disabled = false;
+    $('#cxOut').textContent = r.data && r.data.ok ? `✓ Astra جواب داد: ${r.data.reply}` : `✗ ${(r.data && r.data.error) || 'جواب نداد'}`;
+    if (r.data && r.data.ok && !(models.codex_status || {}).logged_in) viewSettings();
+  };
   $$('[data-all]').forEach(b => b.onclick = async () => {
     const r = await post('/api/models', { step: '*', model: b.dataset.all });
     if (r.ok) { toast('✓ عوض شد'); viewSettings(); }

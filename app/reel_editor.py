@@ -7,6 +7,7 @@
 import json, re, shutil, subprocess, threading, time
 from pathlib import Path
 import ai_models as am
+import codex_engine as ce
 import settings as cfg
 
 ROOT  = Path(__file__).resolve().parent.parent
@@ -221,7 +222,27 @@ def parse_produced(stdout):
             "prev": {}, "notes": {}}
 
 
-def _ask(prompt, timeout, model, web=False):
+CODEX_FILES = ["CLAUDE.md", "brand/brand-core.md"]
+CODEX_IDEA_FILES = ["raw.md", "analysis.md", "research.md", "brief.md"]
+
+
+def _codex_prompt(prompt, iid):
+    """Codex به هیچ فایلی دسترسی ندارد (codex_engine)؛ فایل‌هایی که پرامپت می‌گوید «بخوان» و قواعد CLAUDE.md
+    (که Claude خودش از پوشه‌ی استودیو می‌خواند) همین‌جا داخل پرامپت می‌روند."""
+    paths = [ROOT / f for f in CODEX_FILES] + [IDEAS / iid / f for f in CODEX_IDEA_FILES]
+    blocks = []
+    for f in paths:
+        if f.is_file():
+            blocks.append(f"<<<FILE {f.relative_to(ROOT).as_posix()}\n{f.read_text(encoding='utf-8').strip()}\nFILE>>>")
+    head = ("به هیچ فایل یا پوشه‌ای دسترسی نداری. هر فایلی که پایین‌تر گفته شده «بخوان»، متن کاملش همین‌جا آمده؛"
+            " فایلی که این‌جا نیست وجود ندارد. CLAUDE.md قواعد کلی همین استودیوی محتواست و برای تو هم معتبر است.\n"
+            "اگر جایی گفته شده با WebSearch و WebFetch بگرد، با ابزار جستجوی وب خودت بگرد (اگر در دسترست است).\n\n")
+    return head + "\n\n".join(blocks) + "\n\n---\n\n" + prompt
+
+
+def _ask(prompt, timeout, model, web=False, iid=None):
+    if am.is_codex(model):
+        return ce.ask(_codex_prompt(prompt, iid), timeout, model, web=web)
     # پرامپت از stdin می‌رود: خط فرمان ویندوز حداکثر ۳۲ هزار حرف جا دارد
     cmd = [claude_bin(), "-p", "--output-format", "json", "--model", model]
     if web:
@@ -238,8 +259,8 @@ def _ask(prompt, timeout, model, web=False):
 def produce(iid, log, model=None):
     """ریلز تازه می‌سازد. (ok, پیام خطا)"""
     model = model or am.get("produce")
-    log(f"▸ مدل: {am.CHOICES.get(model, model)} — Claude دارد ریلز را بخش‌به‌بخش می‌نویسد…")
-    code, res, err = _ask(PRODUCE_PROMPT.replace("ID", iid), 3600, model)
+    log(f"▸ مدل: {am.label(model)} — دارد ریلز را بخش‌به‌بخش می‌نویسد…")
+    code, res, err = _ask(PRODUCE_PROMPT.replace("ID", iid), 3600, model, iid=iid)
     if code != 0 or not res:
         if err:
             log(err)
@@ -294,7 +315,7 @@ def _regen(iid, field, note):
                   .replace("SEC_RULES", RULES[field]
                            + ("\nاگر نظر کاربر درباره‌ی یک هوک مشخص است، ترتیب را حفظ کن تا آن هوک سر جای خودش بماند."
                               if field == "hooks" else "")))
-        code, res, err = _ask(prompt, 1500, am.get("regen"), web=True)
+        code, res, err = _ask(prompt, 1500, am.get("regen"), web=True, iid=iid)
         text = _between(res, "<<<OUT", "OUT>>>") if res else ""
         value = parse_hooks(text) if field == "hooks" else text.strip()
         if field == "hashtags":

@@ -83,9 +83,11 @@ def run_build(url):
         setj(slug=slug, step="نوشتن متن‌های فارسی")
         log(f"▸ ترنسکریپت آماده شد → {slug}")
         log("▸ حالا Claude دارد فایل‌ها را می‌نویسد. چند دقیقه طول می‌کشد…")
+        if am.is_codex(am.get("produce")):    # این مسیر فایل می‌نویسد؛ Astra فقط متن برمی‌گرداند
+            log(f"▸ یوتیوب ← ریلز همیشه با Claude است ({am.label(am.claude_model('produce'))})؛ Astra فقط برای ریلز بانک ایده است.")
 
         c = subprocess.run([cfg.claude_bin(), "-p", BUILD_PROMPT.format(url=url, slug=slug),
-                            "--model", am.get("produce"),
+                            "--model", am.claude_model("produce"),
                             "--permission-mode", "acceptEdits", "--output-format", "text"],
                            cwd=str(ROOT), capture_output=True, text=True, encoding="utf-8", errors="replace", timeout=5400)
         if c.returncode != 0:
