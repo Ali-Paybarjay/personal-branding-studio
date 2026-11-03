@@ -453,7 +453,8 @@ function stTrim(img) {
   for (let y = y0; y < gapAt; y++) for (let xx = 0; xx < W; xx++) if (ink(xx, y)) { if (xx < mx0) mx0 = xx; if (xx > mx1) mx1 = xx; }
   return { full, mark: { img, sx: mx0, sy: y0, sw: mx1 - mx0 + 1, sh: gapAt - y0 } };
 }
-// لوگو = اولین تصویر سؤال «لوگو» در هسته‌ی برند: روی زمینه‌ی روشن با رنگ خودش، روی زمینه‌ی تیره سفیدشده.
+// لوگو = اولین تصویر سؤال «لوگو» در هسته‌ی برند: روی زمینه‌ی روشن با رنگ خودش. روی زمینه‌ی تیره اولین تصویری
+// که با ◐ «زمینه‌ی تیره» خورده (نسخه‌ی reversed خود برند)، و اگر نبود همان لوگو سفیدشده.
 function stWhite(img) {
   const c = document.createElement('canvas'); c.width = img.naturalWidth; c.height = img.naturalHeight;
   const x = c.getContext('2d'); x.drawImage(img, 0, 0);
@@ -464,9 +465,12 @@ async function stLogos() {
   // هر بار از نو: شاید لوگو یا رنگ‌ها همین الان در هسته‌ی برند عوض شده باشند
   const b = await api('/api/brand');
   stApplyBrand(b);
-  const f = (((b && b.fields && b.fields.logo && b.fields.logo.v) || []).find(x => x && x.file) || {}).file;
-  const k = f ? await new Promise(r => { const i = new Image(); i.onload = () => r(i); i.onerror = () => r(null); i.src = '/brand-assets/' + encodeURIComponent(f); }) : null;
-  ST.logos = { light: k && stTrim(stWhite(k)), dark: k && stTrim(k) };   // light = لوگوی سفید برای زمینه‌ی تیره
+  const v = ((b && b.fields && b.fields.logo && b.fields.logo.v) || []).filter(x => x && x.file);
+  const onLight = (v.find(x => x.bg !== 'dark') || v[0] || {}).file, onDark = (v.find(x => x.bg === 'dark') || {}).file;
+  const load = f => f ? new Promise(r => { const i = new Image(); i.onload = () => r(i); i.onerror = () => r(null); i.src = '/brand-assets/' + encodeURIComponent(f); }) : null;
+  const [k, kd] = await Promise.all([load(onLight), onDark && onDark !== onLight ? load(onDark) : null]);
+  // light = لوگو برای زمینه‌ی تیره (روشن‌رنگ)، dark = لوگو برای زمینه‌ی روشن
+  ST.logos = { light: kd ? stTrim(kd) : k && stTrim(stWhite(k)), dark: k && stTrim(k) };
 }
 
 // رنگ‌های «هسته‌ی برند ← هویت بصری» ← زمینه، تأکید و دایره‌های رنگ استوری و کاروسل.
